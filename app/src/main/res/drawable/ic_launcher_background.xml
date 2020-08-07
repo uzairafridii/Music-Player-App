@@ -1,0 +1,48 @@
+/** Copyright 2017 The Android Open Source Project** Licensed under the Apache License, Version 2.0 (the "License");* you may not use this file except in compliance with the License.* You may obtain a copy of the License at**     https://www.apache.org/licenses/LICENSE-2.0** Unless required by applicable law or agreed to in writing, software* distributed under the License is distributed on an "AS IS" BASIS,* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.* See the License for the specific language governing permissions and* limitations under the License.*/
+
+    package com.google.android.material.chip;
+
+    import com.google.android.material.R;
+
+    import android.annotation.TargetApi;import android.content.Context;import android.content.res.ColorStateList;import android.content.res.TypedArray;import android.graphics.Canvas;import android.graphics.Color;import android.graphics.ColorFilter;import android.graphics.Outline;import android.graphics.Paint;import android.graphics.Paint.Align;import android.graphics.Paint.FontMetrics;import android.graphics.Paint.Style;import android.graphics.Path;import android.graphics.PixelFormat;import android.graphics.PointF;import android.graphics.PorterDuff.Mode;import android.graphics.PorterDuffColorFilter;import android.graphics.Rect;import android.graphics.RectF;import android.graphics.drawable.Drawable;import android.graphics.drawable.Drawable.Callback;import android.graphics.drawable.RippleDrawable;import android.graphics.drawable.ShapeDrawable;import android.graphics.drawable.shapes.OvalShape;import android.os.Build.VERSION_CODES;import androidx.annotation.AnimatorRes;import androidx.annotation.AttrRes;import androidx.annotation.BoolRes;import androidx.annotation.ColorInt;import androidx.annotation.ColorRes;import androidx.annotation.DimenRes;import androidx.annotation.DrawableRes;import androidx.annotation.NonNull;import androidx.annotation.Nullable;import androidx.annotation.Px;import androidx.annotation.StringRes;import androidx.annotation.StyleRes;import androidx.annotation.XmlRes;import com.google.android.material.shape.MaterialShapeDrawable;import com.google.android.material.shape.ShapeAppearanceModel;import androidx.core.graphics.ColorUtils;import androidx.core.graphics.drawable.DrawableCompat;import androidx.core.graphics.drawable.TintAwareDrawable;import androidx.core.text.BidiFormatter;import androidx.core.view.ViewCompat;import androidx.appcompat.content.res.AppCompatResources;import android.text.TextUtils;import android.text.TextUtils.TruncateAt;import android.util.AttributeSet;import android.view.View;import com.google.android.material.animation.MotionSpec;import com.google.android.material.canvas.CanvasCompat;import com.google.android.material.color.MaterialColors;import com.google.android.material.drawable.DrawableUtils;import com.google.android.material.internal.TextDrawableHelper;import com.google.android.material.internal.TextDrawableHelper.TextDrawableDelegate;import com.google.android.material.internal.ThemeEnforcement;import com.google.android.material.resources.MaterialResources;import com.google.android.material.resources.TextAppearance;import com.google.android.material.ripple.RippleUtils;import java.lang.ref.WeakReference;import java.util.Arrays;
+
+    /*** ChipDrawable contains all the layout and draw logic for {@link Chip}.**
+<p>You can use ChipDrawable directly in contexts that require a Drawable. For example, an
+    * auto-complete enabled EditText can replace snippets of text with a ChipDrawable to represent
+    it
+    * as a semantic entity. To create an instance of ChipDrawable, use {@link
+    * ChipDrawable#createFromResource(Context, int)} and pass in an XML resource in this form:
+    *
+    *
+    <pre>{@code
+        *
+        <chip xmlns:app="http://schemas.android.com/apk/res-auto"
+        * android:text="Hello, World!"/>
+        * }
+    </pre>
+    *
+    *
+    <p>The basic attributes you can set are:
+        *
+        *
+        <ul>
+            *<li>{@link android.R.attr#checkable android:checkable} - If true, the chip can be
+            toggled. If
+            * false, the chip acts like a button.
+            *<li>{@link android.R.attr#text android:text} - Sets the text of the chip.
+            *<li>{@link R.attr#chipIcon app:chipIcon} - Sets the icon of the chip, or use @null to
+            display
+            * no icon. Usually on the left.
+            *<li>{@link R.attr#checkedIcon app:checkedIcon} - Sets a custom icon to use when
+            checked, or
+            * use @null to display no icon. Usually on the left.
+            *<li>{@link R.attr#closeIcon app:closeIcon} - Sets a custom icon that the user can click
+            to
+            * close, or use @null to display no icon. Usually on the right.
+            *<li>{@link android.R.attr#ellipsize} - Does not support {@link
+            * android.text.TextUtils.TruncateAt#MARQUEE} because chip text should not scroll.
+            *
+        </ul>
+        *
+        *
+        <p>When used
